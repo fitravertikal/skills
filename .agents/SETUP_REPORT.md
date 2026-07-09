@@ -7,13 +7,13 @@
 
 ## Ringkasan
 
-12 repo dikonfigurasi untuk kolaborasi Hermes ↔ Claude Code via GitHub.
-7 **public** berhasil penuh (`.agents/` + labels + branch protection).
+13 repo dikonfigurasi untuk kolaborasi Hermes ↔ Claude Code via GitHub.
+8 **public** berhasil penuh (`.agents/` + labels + branch protection).
 5 **private** berhasil sebagian — branch protection perlu GitHub Pro.
 
 ---
 
-## ✅ Full Success (7 repos)
+## ✅ Full Success (8 repos)
 
 | Repo | Visibility | Default Branch | `.agents/` | Labels (5) | Branch Protection |
 |---|---|---|---|---|---|
@@ -24,6 +24,7 @@
 | `fitravertikal/bibliometrix` | public | `master` | ✅ | ✅ | ✅ |
 | `fitravertikal/odoo` | public | `19.0` | ✅ | ✅ | ✅ |
 | `fitravertikal/office` | public | `main` | ✅ | ✅ | ✅ |
+| `fitravertikal/finansial-planer` | public | `main` | ✅ | ✅ | ✅ |
 
 ---
 
@@ -110,3 +111,9 @@ Semua file di `fitravertikal/skills/.agents/`:
 - **`odoo`** punya `.gitignore` yang memblokir `.agents/` — perlu `git add -f .agents/`.
 - **`hermes-mirror`** dan **`bibliometrix`** pakai `master`, bukan `main`.
 - **`odoo`** default branch `19.0`, bukan `main`.
+
+## Updates
+
+| Date | Repo | Detail |
+|---|---|---|
+| 2026-07-09 | `finansial-planer` | Bootstrap — repo dibuat, labels, branch protection, `.agents/` pushed (`ca2c92c`) |
