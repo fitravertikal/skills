@@ -1,67 +1,83 @@
-# Message to Hermes — collaboration onboarding
+# Onboarding Hermes — Kolaborasi & Setup Repo
 
-> Paste this to Hermes. It onboards Hermes into the GitHub-mediated workspace it
-> now shares with Claude Code. Reusable across every repo you want in the workspace.
+> Bagian 1 adalah pesan untuk Hermes (peran & aturan). Bagian 2 adalah perintah
+> setup konkret yang dijalankan Hermes di tiap repo. Portabel ke semua repo workspace.
 
 ---
 
-Hermes — you're now collaborating with **Claude Code** inside my repos, and
-**GitHub is our only shared channel**. There is no direct agent-to-agent link:
-every intent, handoff, and result must be a branch, commit, PR, issue, label, or
-comment. If it isn't on GitHub, the other agent can't see it.
+## Bagian 1 — Pesan untuk Hermes
 
-**Before you act in any repo, read `.agents/COLLABORATION.md` and
-`.agents/TOPOLOGY.md` in that repo and follow them.** They are the source of
-truth; this message is just the summary.
+Hermes — kamu berkolaborasi dengan **Claude Code** di repo-repo Fitra, dan **GitHub
+adalah satu-satunya kanal bersama**. Tidak ada link antar-agent langsung: setiap intent,
+handoff, dan hasil harus berupa branch, commit, PR, issue, label, atau komentar.
 
-## Your role and boundaries
+**Sebelum bertindak di repo mana pun, baca `.agents/COLLABORATION.md` dan
+`.agents/TOPOLOGY.md` di repo itu dan ikuti.** Itu sumber kebenarannya; ini ringkasan.
 
-- **Identity:** commit as Hermes and add a trailer `Co-Authored-By: Hermes <…>`
-  so history is auditable. Never impersonate or edit Claude's commits.
-- **Branch ownership:** you own `hermes/*` and commit only there. **Never push to
-  `claude/*`** and never force-push a branch you don't own.
-- **Authority ≠ permission.** You have full authority across my repos, but you
-  honor these rules as policy — like a trusted senior engineer who has admin but
-  still follows process.
+- **Identitas:** commit sebagai Hermes + trailer `Co-Authored-By: Hermes <hermes@epslab.id>`. Jangan menyamar/mengedit commit Claude.
+- **Branch ownership:** kamu memiliki `hermes/*` dan hanya commit di situ. **Jangan pernah push ke `claude/*`**, jangan force-push branch yang bukan milikmu.
+- **Authority ≠ permission:** kamu punya otoritas penuh, tapi patuhi aturan sebagai kebijakan.
+- **Satu tugas = satu issue**, branch & PR merujuk padanya (`Fixes #N`).
+- **Semua PR mulai draft**; tandai *ready* hanya saat yakin mergeable.
+- **Handoff eksplisit:** komentar **Done / Want / Context**, lepas `agent:wip`, tambah `needs:claude` (atau `agent:review`), assign. Lalu berhenti sampai dikembalikan.
+- **Loop guard:** bolak-balik 3× tanpa *ready* → `agent:blocked`, tunggu Fitra.
+- **Merge gate:** **jangan merge ke `main`.** Siapkan & review PR; Fitra yang merge.
+- **Reaksi ke state**, bukan notifikasi basi — baca ulang state terkini dulu.
 
-## How we work
+---
 
-1. **One task = one GitHub issue.** Branches and PRs reference it (`Fixes #123`).
-2. **All PRs start as draft.** Mark *ready for review* only when you believe it's
-   mergeable.
-3. **Hand off explicitly.** When you want Claude Code to act, post one comment with
-   **Done** (what you changed), **Want** (the exact next action), **Context**
-   (anything not obvious from the diff); then remove your `agent:wip` label, add
-   `needs:claude` (or `agent:review` for a review request), and assign it. Then
-   stop working that issue until it's handed back.
-4. **Act only on your labels.** Take work labeled `needs:hermes` (swap it to
-   `agent:wip` when you start). Never act on a label your own last action created,
-   and never reply to your own comments.
-5. **Loop guard:** if one issue bounces between us **3 times** without reaching
-   *ready for review*, add `agent:blocked`, write a short "where we're stuck" note,
-   and wait for me. Never trade a task indefinitely.
-6. **Merge gate:** **do not merge to `main`.** Prepare and review PRs; I merge.
-   (Even though you technically can — don't.)
-7. **React to state, not stale notifications.** Re-read the current issue/PR state
-   before acting; the baton may have already moved.
+## Bagian 2 — Setup per repo
 
-## Setup tasks I'm asking you to do now
+Jalankan untuk tiap repo yang digabung ke workspace.
 
-For each repo you should join to this workspace:
+### 1. Label Koordinasi
 
-1. **Create the coordination labels:**
-   ```bash
-   gh label create "needs:claude"  --repo <owner>/<repo> --color 6f42c1 --description "Claude Code should pick this up" --force
-   gh label create "needs:hermes"  --repo <owner>/<repo> --color d93f0b --description "Hermes should pick this up"      --force
-   gh label create "agent:review"  --repo <owner>/<repo> --color fbca04 --description "Ready for the other agent to review the PR" --force
-   gh label create "agent:blocked" --repo <owner>/<repo> --color b60205 --description "Stuck — needs a human decision"   --force
-   gh label create "agent:wip"     --repo <owner>/<repo> --color 0e8a16 --description "Actively being worked; do not touch" --force
-   ```
-2. **Enable branch protection on `main`:** require a PR, require status checks to
-   pass, and require at least one approving review.
-3. **Copy the protocol files** (`.agents/COLLABORATION.md`, `.agents/TOPOLOGY.md`)
-   into any repo that doesn't have them yet, keeping them byte-identical to the
-   canonical copy in `fitravertikal/skills`.
+```bash
+gh label create "needs:claude"  --color "0969DA" --description "Menunggu aksi Claude Code" --force
+gh label create "needs:hermes"  --color "BF8700" --description "Menunggu aksi Hermes" --force
+gh label create "agent:review"  --color "8250DF" --description "Menunggu review dari agent lain" --force
+gh label create "agent:blocked" --color "CF222E" --description "Terblokir — butuh intervensi Fitra" --force
+gh label create "agent:wip"     --color "1A7F37" --description "Sedang dikerjakan agent" --force
+```
 
-Report back with the list of repos you configured and any where branch protection
-couldn't be set, so I can finish those manually.
+### 2. Branch Protection
+
+> **Public repos only.** Private repos perlu GitHub Pro/Team — setup manual di Settings → Branches → Add rule.
+
+```bash
+gh api repos/{owner}/{repo}/branches/{branch}/protection \
+  --method PUT --input - << 'JSON'
+{
+  "required_status_checks": null,
+  "enforce_admins": false,
+  "required_pull_request_reviews": {
+    "required_approving_review_count": 1
+  },
+  "restrictions": null,
+  "required_linear_history": false,
+  "allow_force_pushes": false,
+  "allow_deletions": false,
+  "block_creations": false,
+  "required_conversation_resolution": true,
+  "lock_branch": false,
+  "allow_fork_syncing": true
+}
+JSON
+```
+
+> Ganti `{branch}` dengan nama default branch (biasanya `main` atau `master`).
+> `-F` mengirim form-string; API branch protection butuh body JSON via `--input`.
+
+### 3. Salin file `.agents/`
+
+Salin dari salinan kanonik di `fitravertikal/skills`, jaga byte-identik:
+
+```bash
+cp /path/to/skills/.agents/COLLABORATION.md .agents/
+cp /path/to/skills/.agents/TOPOLOGY.md .agents/
+cp /path/to/skills/.agents/HERMES_ONBOARDING.md .agents/
+git add .agents/ && git commit -m "chore: add agent collaboration config" && git push
+```
+
+Laporkan balik daftar repo yang berhasil dikonfigurasi dan yang branch protection-nya
+gagal, biar Fitra rampungkan manual.
