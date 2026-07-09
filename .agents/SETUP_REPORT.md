@@ -52,14 +52,14 @@ gh api repos/fitravertikal/{repo}/branches/{branch}/protection   --method PUT --
   "required_status_checks": null,
   "enforce_admins": false,
   "required_pull_request_reviews": {
-    "required_approving_review_count": 1
+    "required_approving_review_count": 0
   },
   "restrictions": null,
   "required_linear_history": false,
   "allow_force_pushes": false,
   "allow_deletions": false,
   "block_creations": false,
-  "required_conversation_resolution": true,
+  "required_conversation_resolution": false,
   "lock_branch": false,
   "allow_fork_syncing": true
 }
