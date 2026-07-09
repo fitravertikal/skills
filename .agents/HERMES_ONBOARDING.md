@@ -12,25 +12,32 @@ gh label create "agent:blocked" --color "CF222E" --description "Terblokir — bu
 gh label create "agent:wip" --color "1A7F37" --description "Sedang dikerjakan agent"
 ```
 
-## 2. Branch Protection (main)
+## 2. Branch Protection
+
+> **Public repos only.** Private repos require GitHub Pro/Team — setup manual di Settings → Branches → Add rule.
 
 ```bash
-gh api repos/{owner}/{repo}/branches/main/protection \
-  --method PUT \
-  -F required_status_checks='{"strict":true,"contexts":[]}' \
-  -F enforce_admins=false \
-  -F required_pull_request_reviews='{"required_approving_review_count":1}' \
-  -F restrictions=null \
-  -F required_linear_history=false \
-  -F allow_force_pushes=false \
-  -F allow_deletions=false \
-  -F block_creations=false \
-  -F required_conversation_resolution=true \
-  -F lock_branch=false \
-  -F allow_fork_syncing=true
+gh api repos/{owner}/{repo}/branches/{branch}/protection \
+  --method PUT --input - << 'JSON'
+{
+  "required_status_checks": null,
+  "enforce_admins": false,
+  "required_pull_request_reviews": {
+    "required_approving_review_count": 1
+  },
+  "restrictions": null,
+  "required_linear_history": false,
+  "allow_force_pushes": false,
+  "allow_deletions": false,
+  "block_creations": false,
+  "required_conversation_resolution": true,
+  "lock_branch": false,
+  "allow_fork_syncing": true
+}
+JSON
 ```
 
-> Catatan: Branch protection via API memerlukan repo **public** atau GitHub **Pro/Team**. Jika gagal (HTTP 403/422), setup manual di Settings → Branches → Add rule.
+> Ganti `{branch}` dengan nama default branch (biasanya `main` atau `master`).
 
 ## 3. Copy `.agents/` Files
 
