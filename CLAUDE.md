@@ -67,3 +67,7 @@ Use the meta-skill for this rather than hand-rolling the process: `skills/skill-
 - Use the imperative mood in instructions; explain *why* a step matters rather than issuing bare ALL-CAPS MUSTs.
 - Don't duplicate content the model can already access — read files with FILE tools directly rather than re-explaining file structures the skill will discover on its own.
 - After adding a new skill directory, register it in `.claude-plugin/marketplace.json` under the appropriate plugin's `skills` array so it's actually installable.
+
+## Collaborating with other agents
+
+If another autonomous agent (e.g. Hermes) may also be working in this repo, read `.agents/COLLABORATION.md` before starting and follow it. In short: own the `claude/*` branch prefix (never push to `hermes/*`), treat each GitHub issue as the unit of work, open PRs as drafts, hand off explicitly via the `needs:*` / `agent:*` labels plus an assignee, and leave merges to `main` for a human. The full state machine, loop guardrails, and merge policy live in that file.
